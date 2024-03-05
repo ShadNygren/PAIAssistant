@@ -9,6 +9,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         net-tools \
         python3.10 \
         python3-pip \
+        build-essential \
         #npm \
         curl && \
     apt-get clean && \
