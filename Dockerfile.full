@@ -30,6 +30,9 @@ COPY api/ .
 
 RUN pip install -r requirements.txt
 
+RUN cd PAIAssistant
+RUN ./setupenv.sh
+
 EXPOSE 4000
 EXPOSE 7860
 
