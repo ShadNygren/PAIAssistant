@@ -1,0 +1,54 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  AWS_DEFAULT_REGION: us-west-2
+  AWS_ACCOUNT_ID: 365024520127
+  IMAGE_CONFIG: api
+  IMAGE_REPO_NAME: paiassistant
+  IMAGE_TAG: experimental
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup environment
+      run: |
+        echo "IMAGE_CONFIG_LOWERCASE=$(echo ${{ env.IMAGE_CONFIG }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        echo "IMAGE_REPO_NAME_LOWERCASE=$(echo ${{ env.IMAGE_REPO_NAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        echo "IMAGE_TAG_LOWERCASE=$(echo ${{ env.IMAGE_TAG }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+    - name: Install dependencies
+      run: |
+        cat /etc/issue
+        uname -a
+        whoami
+        pwd
+        sudo apt update
+        sudo apt -y install git
+
+    - name: Test Docker setup
+      run: |
+        docker run hello-world
+
+    - name: Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build Docker image
+      run: |
+        docker build -f Dockerfile.${{ env.IMAGE_CONFIG_LOWERCASE }} -t ${{ env.IMAGE_REPO_NAME_LOWERCASE }}-${{ env.IMAGE_CONFIG_LOWERCASE }}:${{ env.IMAGE_TAG_LOWERCASE }} .
+        docker tag ${{ env.IMAGE_REPO_NAME_LOWERCASE }}-${{ env.IMAGE_CONFIG_LOWERCASE }}:${{ env.IMAGE_TAG_LOWERCASE }} ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/${{ env.IMAGE_REPO_NAME_LOWERCASE }}-${{ env.IMAGE_CONFIG_LOWERCASE }}:${{ env.IMAGE_TAG_LOWERCASE }}
+
+    - name: Push Docker image to Amazon ECR
+      run: |
+        docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/${{ env.IMAGE_REPO_NAME_LOWERCASE }}:${{ env.IMAGE_TAG_LOWERCASE }}
