@@ -15,9 +15,13 @@ phases:
       - uname -a
       - whoami
       - pwd
+      - apt update
+      - apt -y install git
       - docker run hello-world
   pre_build:
     commands:
+      - echo Clone PAIAssistant repo from Github...
+      - git clone https://github.com/ShadNygren/PAIAssistant.git
       - echo Logging in to Amazon ECR...
       - #$(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
