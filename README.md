@@ -1,8 +1,8 @@
 <h1 align="center">Welcome to PAIAssistant 👋</h1>
 <p>
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
-  <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
-    <img alt="License: CC-BY-4.0" src="https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg" />
+  <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">
+    <img alt="License: Apache-2.0" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg">
   <a href="https://kwaaiailab.slack.com" target="_blank">
     <img alt="Slack: Kwaai.org" src="https://img.shields.io/badge/slack-join-green?logo=slack" />
   </a>
@@ -90,5 +90,5 @@ useopenai=true
 
 ## 📝 License
 
-This project is [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) licensed.
+This project is [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0) licensed.
 
