@@ -1,4 +1,5 @@
 Apache License, Version 2.0 (Apache-2.0)
+
 Copyright 2024 Shad Nygren / Virtual Hipster Corporation
 
 This product includes software developed at https://github.com/ShadNygren/PAIAssistant.
