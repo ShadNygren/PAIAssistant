@@ -11,12 +11,12 @@ Due to licensing ambiguities, the Kwaai PAIAssistant material is recognized unde
 
 For detailed information on the license of each third-party material, please refer to the corresponding license files included in their respective directories or provided URLs.
 
-[Optional: Here, you might want to include specific details about how the Kwaai PAIAssistant material was used or modified in your project, if this is relevant and required for compliance or clarity.]\
-- The original Kwaai-AI-Lab/PAIAssistant was cloned.\
-- Multiple Dockerfiles were created for different PAIAssistant configurations i.e. api, web and full.\
-- The Docker images were created so that they can be deployed on Kubernetes with testing on AWS EKS.\
-- Created buildspec.yml for AWS CodeBuild.\
-- Added main.yml for Github Actions.\
+[Optional: Here, you might want to include specific details about how the Kwaai PAIAssistant material was used or modified in your project, if this is relevant and required for compliance or clarity.]
+- The original Kwaai-AI-Lab/PAIAssistant was cloned.
+- Multiple Dockerfiles were created for different PAIAssistant configurations i.e. api, web and full.
+- The Docker images were created so that they can be deployed on Kubernetes with testing on AWS EKS.
+- Created buildspec.yml for AWS CodeBuild.
+- Added main.yml for Github Actions.
 - License was changed to from ambiguous Creative Commons license to Apache-2.0
 
 [If your project includes other third-party materials, you should also acknowledge them in this NOTICE file in a similar manner, respecting each material's licensing terms.]
