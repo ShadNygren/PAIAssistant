@@ -9,11 +9,12 @@ Version 1.0.0 - 2024-03-14
 - Docker Integration:
   - Created multiple Dockerfiles for different configurations i.e. api, web and full.
   - Incorporated Dockerfile from pull request by Jesus Raul Jimenez Perez jrauljperez07
-  - Packaged different PAIAssistant configurations into seperate Docker images.
+  - Packaged different PAIAssistant configurations into seperate Docker images for running locally or in Kubernetes with GPU and non-GPU instances.
   - The Docker images are designed for deployment on Kubernetes environments, with testing conducted on AWS Elastic Kubernetes Service (EKS).
 
 - Continuous Integration and Continuous Deployment (CI/CD):
   - Added a buildspec.yml file to ensure compatibility with AWS CodeBuild and CodePipeline. This enhances the project's ability to integrate into automated build and deployment pipelines.
+  - Added main.yml for Github Actions. This enhances the project's ability to integrate into automated build and deployment pipelines.
 
 - Licensing:
   - Addressed the original project's ambiguous Creative Commons licensing (CC0 1.0 and CC BY 4.0) by transitioning to the Apache License 2.0 for both PAIAssistantWeb and PAIAssistantAPI.
