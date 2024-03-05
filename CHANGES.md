@@ -8,6 +8,7 @@ Version 1.0.0 - 2024-03-14
 
 - Docker Integration:
   - Created multiple Dockerfiles for different configurations i.e. api, web and full.
+  - Incorporated Dockerfile from pull request by Jesus Raul Jimenez Perez jrauljperez07
   - Packaged different PAIAssistant configurations into seperate Docker images.
   - The Docker images are designed for deployment on Kubernetes environments, with testing conducted on AWS Elastic Kubernetes Service (EKS).
 
