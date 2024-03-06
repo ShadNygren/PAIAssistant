@@ -10,6 +10,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         python3.10 \
         python3-pip \
         build-essential \
+        git \
         libasound2-dev \
         npm \
         curl && \
