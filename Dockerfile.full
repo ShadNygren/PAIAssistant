@@ -40,7 +40,7 @@ COPY web/ .
 
 WORKDIR /app/api
 #COPY api/ .
-COPY api/ api/
+COPY api/ ./api/
 
 COPY setupenv.sh .
 #RUN cd PAIAssistant
@@ -55,6 +55,10 @@ RUN unzip -q awscli2.zip
 RUN ./aws/install
 RUN aws --version
 
+RUN whoami
+RUN pwd
+RUN ls -al .
+RUN ls -al ./api/
 #Unable to checkin model files etc due to size, you have to copy them manually from huggingface openchat_3.5.Q4_K_M.gguf and wav2lip checkpoints from https://drive.google.com/drive/folders/1I-0dNLfFOSFwrfqjNa-SXuwaURHE5K4k and copy to api/checkpoints folder
 RUN aws s3 cp s3://paiassistant/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf api/checkpoints/
 RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip_gan.pth api/checkpoints/
