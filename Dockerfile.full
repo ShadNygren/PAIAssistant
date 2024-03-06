@@ -12,6 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         python3-pip \
         build-essential \
         git \
+        cuda-toolkit \
         libasound2-dev \
         npm \
         curl && \
