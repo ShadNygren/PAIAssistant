@@ -55,7 +55,8 @@ RUN aws --version
 RUN aws s3 cp s3://paiassistant/huggingface/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf api/checkpoints/
 RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip_gan.pth api/checkpoints/
 RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip.gif api/checkpoints/
-RAN aws s3 cp s3://paiassistant/wav2lip/test.wav api/checkpoints/
+RUN aws s3 cp s3://paiassistant/wav2lip/test.wav api/checkpoints/
+
 #I have not uploaded the transcripts to github, i can provide a zip file to shared drive so you can move them over for indexing using createindex.py after dropping it to data\kwaai
 
 EXPOSE 4000
