@@ -56,7 +56,7 @@ RUN ./aws/install
 RUN aws --version
 
 #Unable to checkin model files etc due to size, you have to copy them manually from huggingface openchat_3.5.Q4_K_M.gguf and wav2lip checkpoints from https://drive.google.com/drive/folders/1I-0dNLfFOSFwrfqjNa-SXuwaURHE5K4k and copy to api/checkpoints folder
-RUN aws s3 cp s3://paiassistant/huggingface/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf api/checkpoints/
+RUN aws s3 cp s3://paiassistant/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf api/checkpoints/
 RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip_gan.pth api/checkpoints/
 RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip.gif api/checkpoints/
 RUN aws s3 cp s3://paiassistant/wav2lip/test.wav api/checkpoints/
