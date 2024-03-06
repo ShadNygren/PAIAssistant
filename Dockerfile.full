@@ -1,14 +1,14 @@
 #FROM pytorch/pytorch:latest
 FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-devel
 
-#ARG AWS_ACCESS_KEY="Pass Your AWS_ACCESS_KEY using --build-arg"
-#ARG AWS_SECRET_ACCESS_KEY="Pass Your AWS_SECRET_ACCESS_KEY using --build-arg"
-#ARG AWS_DEFAULT_REGION="Pass Your AWS_DEFAULT_REGION using --build-arg"
+ARG AWS_ACCESS_KEY "Pass Your AWS_ACCESS_KEY using --build-arg"
+ARG AWS_SECRET_ACCESS_KEY "Pass Your AWS_SECRET_ACCESS_KEY using --build-arg"
+ARG AWS_DEFAULT_REGION "Pass Your AWS_DEFAULT_REGION using --build-arg"
 
-#ENV AWS_ACCESSKEY=$AWS_ACCESS_KEY
-#ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-#ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
-ENV AWS_DEFAULT_REGION=us-west-2
+ENV AWS_ACCESSKEY $AWS_ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY $AWS_SECRET_ACCESS_KEY
+ENV AWS_DEFAULT_REGION $AWS_DEFAULT_REGION
+#ENV AWS_DEFAULT_REGION=us-west-2
 
 RUN echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-docker
 RUN echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-docker
