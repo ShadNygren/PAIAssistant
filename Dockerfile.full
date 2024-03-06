@@ -43,6 +43,11 @@ RUN ./setupenv.sh
 # install -r requirements.txt is being done at the end of setupenv.sh
 #RUN pip install -r requirements.txt
 
+# echo installing AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli2.zip"
+RUN unzip -q awscli2.zip
+RUN ./aws/install
+
 EXPOSE 4000
 EXPOSE 7860
 
