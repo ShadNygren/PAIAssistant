@@ -28,12 +28,12 @@ COPY web/ .
 WORKDIR /app/api
 COPY api/ .
 
-RUN pip install -r requirements.txt
-
 COPY setupenv.sh .
 #RUN cd PAIAssistant
 RUN chmod +x ./setupenv.sh
 RUN ./setupenv.sh
+# install -r requirements.txt is being done at the end of setupenv.sh
+#RUN pip install -r requirements.txt
 
 EXPOSE 4000
 EXPOSE 7860
