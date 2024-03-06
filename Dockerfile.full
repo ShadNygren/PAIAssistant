@@ -30,7 +30,8 @@ COPY api/ .
 
 RUN pip install -r requirements.txt
 
-RUN cd PAIAssistant
+COPY setupenv.sh .
+#RUN cd PAIAssistant
 RUN ./setupenv.sh
 
 EXPOSE 4000
