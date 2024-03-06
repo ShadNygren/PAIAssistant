@@ -23,6 +23,7 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 RUN find / -name "*cuda*"
 RUN find / -name "*cuBLAS*"
 RUN find / -name "nvcc"
+RUN nvidia-smi
 
 WORKDIR /app/web
 COPY web/package*.json ./
