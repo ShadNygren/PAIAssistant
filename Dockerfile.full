@@ -63,6 +63,8 @@ COPY api/ .
 
 RUN ls -al /workspace
 
+RUN pip3 install numpy==1.22.0
+
 COPY setupenv.sh .
 #RUN cd PAIAssistant
 RUN chmod +x ./setupenv.sh
