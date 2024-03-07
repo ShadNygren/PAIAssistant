@@ -4,7 +4,7 @@ llama_index==0.9.10
 jinja2==3.1.2
 markupsafe==2.0.1
 librosa==0.10.0
-numpy
+numpy==1.22.0
 numba==0.59.0
 torch
 transformers
