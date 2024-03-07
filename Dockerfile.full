@@ -1,13 +1,17 @@
 #FROM pytorch/pytorch:latest
 FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-devel
 
-ARG AWS_ACCESS_KEY "Pass Your AWS_ACCESS_KEY using --build-arg"
-ARG AWS_SECRET_ACCESS_KEY "Pass Your AWS_SECRET_ACCESS_KEY using --build-arg"
-ARG AWS_DEFAULT_REGION "Pass Your AWS_DEFAULT_REGION using --build-arg"
+ARG ARG_AWS_ACCESS_KEY
+ARG ARG_AWS_SECRET_ACCESS_KEY
+ARG ARG_AWS_DEFAULT_REGION
 
-ENV AWS_ACCESSKEY $AWS_ACCESS_KEY
-ENV AWS_SECRET_ACCESS_KEY $AWS_SECRET_ACCESS_KEY
-ENV AWS_DEFAULT_REGION $AWS_DEFAULT_REGION
+ARG ARG_AWS_ACCESS_KEY="Pass Your AWS_ACCESS_KEY using --build-arg"
+ARG ARG_AWS_SECRET_ACCESS_KEY="Pass Your AWS_SECRET_ACCESS_KEY using --build-arg"
+ARG ARG_AWS_DEFAULT_REGION="Pass Your AWS_DEFAULT_REGION using --build-arg"
+
+ENV AWS_ACCESSKEY=$AWS_ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 #ENV AWS_DEFAULT_REGION=us-west-2
 
 RUN echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-docker
@@ -71,7 +75,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli2.
 RUN unzip -q awscli2.zip
 RUN ./aws/install
 RUN aws --version
-RUN echo TODAY IS 2024-03-06 10:pm
+RUN echo TODAY IS 2024-03-06 11:51pm
 RUN echo "$AWS_DEFAULT_REGION"
 RUN aws configure set default.region "$AWS_DEFAULT_REGION"
 
