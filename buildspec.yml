@@ -27,6 +27,7 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
+      - echo AWS_DEFAULT_REGION = $AWS_DEFAULT_REGION
       - echo Build started on `date`
       - echo Building the Docker image...
       - IMAGE_CONFIG_LOWERCASE=$(echo $IMAGE_CONFIG | tr '[:upper:]' '[:lower:]')
