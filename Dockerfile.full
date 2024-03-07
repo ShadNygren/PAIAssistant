@@ -65,13 +65,6 @@ RUN ls -al /workspace
 
 RUN pip3 install numpy==1.22.0
 
-COPY setupenv.sh .
-#RUN cd PAIAssistant
-RUN chmod +x ./setupenv.sh
-RUN ./setupenv.sh
-# install -r requirements.txt is being done at the end of setupenv.sh
-#RUN pip install -r requirements.txt
-
 RUN pwd
 RUN ls -al
 
@@ -80,6 +73,16 @@ RUN git clone https://github.com/ShadNygren/llama-cpp-python.git
 RUN pip3 install -e llama-cpp-python
 #RUN cd ..
 
+RUN ls -al
+
+COPY setupenv.sh .
+#RUN cd PAIAssistant
+RUN chmod +x ./setupenv.sh
+RUN ./setupenv.sh
+# install -r requirements.txt is being done at the end of setupenv.sh
+#RUN pip install -r requirements.txt
+
+RUN pwd
 RUN ls -al
 
 # echo installing AWS CLI
