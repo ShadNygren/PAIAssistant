@@ -23,6 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         net-tools \
         python3.10 \
         python3-pip \
+        libpython3.10 \
         build-essential \
         git \
         unzip \
@@ -67,8 +68,6 @@ RUN pip3 install numpy==1.22.0
 
 RUN pwd
 RUN ls -al
-
-RUN apt -y install libpython3.10
 
 RUN git clone https://github.com/ShadNygren/llama-cpp-python.git
 RUN git clone --recurse-submodules https://github.com/ShadNygren/llama-cpp-python.git
