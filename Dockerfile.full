@@ -72,10 +72,15 @@ RUN ./setupenv.sh
 # install -r requirements.txt is being done at the end of setupenv.sh
 #RUN pip install -r requirements.txt
 
+RUN pwd
+RUN ls -al
+
 RUN git clone https://github.com/ShadNygren/llama-cpp-python.git
-RUN cd llama-cpp-python
-RUN pip3 install -e pyproject.toml
-RUN cd ..
+#RUN cd llama-cpp-python
+RUN pip3 install -e llama-cpp-python
+#RUN cd ..
+
+RUN ls -al
 
 # echo installing AWS CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli2.zip"
