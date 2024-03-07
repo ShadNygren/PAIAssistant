@@ -71,6 +71,7 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli2.
 RUN unzip -q awscli2.zip
 RUN ./aws/install
 RUN aws --version
+RUN echo TODAY IS 2024-03-06 10:29pm
 RUN echo $AWS_DEFAULT_REGION
 RUN aws configure set default.region $AWS_DEFAULT_REGION
 
