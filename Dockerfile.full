@@ -29,6 +29,13 @@ RUN DEBIAN_FRONTEND=noninteractive \
         unzip \
         #cuda-toolkit \
         libasound2-dev \
+        libgl1-mesa.glx \
+        ffmpeg \
+        libsm6 \
+        libext \
+        python3-opencv \
+        opencv-python-headless \
+        libgl1 \
         npm \
         curl && \
     apt-get clean && \
@@ -63,6 +70,8 @@ COPY api/ .
 #COPY api/ ./api/
 
 RUN ls -al /workspace
+
+RUN pip3 install opencv-python
 
 RUN pip3 install numpy==1.22.0
 
