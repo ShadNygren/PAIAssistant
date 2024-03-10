@@ -111,6 +111,9 @@ RUN echo TODAY IS 2024-03-07 01:01am
 RUN echo "$AWS_DEFAULT_REGION"
 RUN aws configure set default.region "$AWS_DEFAULT_REGION"
 
+RUN curl "https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd4/latest/amazon-cloudwatch-agent.deb" -o "amazon-cloudwatch-agent.deb"
+RUN dpkg -i -E amazon-cloudwatch-agent.deb
+
 RUN whoami
 RUN pwd
 RUN ls -al .
