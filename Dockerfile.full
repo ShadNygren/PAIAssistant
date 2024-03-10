@@ -136,5 +136,5 @@ EXPOSE 7860
 
 ENV OPENAI_API_KEY <SAMPLE_OPENAI_API_KEY>
 
-#CMD ["sh", "-c", "python api.py & npm start"]
-CMD ["sh","-c","whoami && pwd && ls && python api.py"]
+CMD ["sh", "-c", "python api.py & npm start"]
+#CMD ["sh","-c","whoami && pwd && ls && python api.py"]
