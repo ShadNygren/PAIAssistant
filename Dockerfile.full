@@ -29,6 +29,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         unzip \
         #cuda-toolkit \
         libasound2-dev \
+        espeak-ng \
         #libgl1-mesa-glx \
         #ffmpeg \
         #libsm6 \
@@ -75,6 +76,8 @@ RUN ls -al /workspace
 RUN pip3 install opencv-python
 
 RUN pip3 install numpy==1.22.0
+
+RUN pip3 install espeakng
 
 RUN pwd
 RUN ls -al
