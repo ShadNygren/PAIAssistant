@@ -35,7 +35,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         #libext \
         #python3-opencv \
         #opencv-python-headless \
-        #libgl1 \
+        libgl1 \
         npm \
         curl && \
     apt-get clean && \
