@@ -30,7 +30,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
         #cuda-toolkit \
         libasound2-dev \
         espeak \
-        espeak-ng \
+        #espeak-ng \
         #libgl1-mesa-glx \
         #ffmpeg \
         #libsm6 \
@@ -78,8 +78,8 @@ RUN pip3 install opencv-python
 
 RUN pip3 install numpy==1.22.0
 
-RUN pip3 install espeakng
-RUN pip3 install python-espeak-ng
+#RUN pip3 install espeakng
+#RUN pip3 install python-espeak-ng
 
 RUN pwd
 RUN ls -al
