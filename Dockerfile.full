@@ -62,6 +62,8 @@ RUN ls -al /workspace
 
 WORKDIR /app/web
 COPY web/package*.json ./
+RUN npm cache clear
+RUN npm cache clean --force
 RUN npm install
 
 COPY web/ .
@@ -70,7 +72,6 @@ RUN ls -al /workspace
 
 WORKDIR /app/api
 COPY api/ .
-#COPY api/ ./api/
 
 RUN ls -al /workspace
 
