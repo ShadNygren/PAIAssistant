@@ -134,8 +134,9 @@ RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/huggingface.co/TheBlok
 #COPY openchat_3.5.Q4_K_M.gguf ./models/openchat_3.5.Q4_K_M.gguf
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/wav2lip/wav2lip_gan.pth" -o "/app/api/checkpoints/wav2lip_gan.pth"
 
-RUN ls -al ./models
-RUN ls -al ./checkpoints
+RUN ls -al
+#RUN ls -al ./models
+#RUN ls -al ./checkpoints
 
 #I have not uploaded the transcripts to github, i can provide a zip file to shared drive so you can move them over for indexing using createindex.py after dropping it to data\kwaai
 
