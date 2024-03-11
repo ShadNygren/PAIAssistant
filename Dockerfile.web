@@ -35,6 +35,15 @@ COPY web/ .
 #WORKDIR /app/api
 #COPY api/ .
 
+RUN pwd
+RUN ls -al
+
+#RUN git clone https://github.com/ShadNygren/llama-cpp-python.git
+RUN git clone --recurse-submodules https://github.com/ShadNygren/llama-cpp-python.git
+#RUN cd llama-cpp-python
+RUN pip3 install -e llama-cpp-python
+#RUN cd ..
+
 RUN ls -al
 
 COPY setupenv.sh .
