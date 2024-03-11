@@ -62,8 +62,8 @@ RUN ls -al /workspace
 
 WORKDIR /app/web
 COPY web/package*.json ./
-RUN npm cache clear
-RUN npm cache clean --force
+#RUN npm cache clear
+#RUN npm cache clean --force
 RUN npm install
 
 COPY web/ .
