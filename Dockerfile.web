@@ -35,6 +35,7 @@ COPY web/ .
 #WORKDIR /app/api
 #COPY api/ .
 
+WORKDIR /app
 RUN pwd
 RUN ls -al
 
