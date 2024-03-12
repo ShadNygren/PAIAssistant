@@ -17,6 +17,7 @@ from llama_index.prompts.base import PromptTemplate
 from inference import main as generateVideo
 import pyttsx3
 
+print("ShadDEBUG-1")
 def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile):
     """
     Runs video generation inference using specified parameters and inputs.
@@ -46,7 +47,7 @@ def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfil
     generateVideo(command)
     
 
-
+print("ShadDEBUG-2")
 def play_sound_then_delete(path_to_wav):
     """
     Plays a sound from the specified WAV file and deletes the file afterwards.
@@ -79,7 +80,7 @@ def play_sound_then_delete(path_to_wav):
      # Start playback in a new thread
     threading.Thread(target=play_and_delete, daemon=True).start()
 
-
+print("ShadDEBUG-3")
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -103,6 +104,7 @@ log_level_str = config.get('api', 'loglevel', fallback='WARNING').upper()
 # Convert the log level string to a logging level
 log_level = getattr(logging, log_level_str, logging.WARNING)
 
+print("ShadDEBUG-4")
 def chatbot(input_text):
     global tts
     print("User Text:" + input_text)    
@@ -154,7 +156,8 @@ def chatbot(input_text):
     jsonResponseStr = json.dumps(jsonResponse, indent=4)
         
     return jsonResponseStr
-    
+
+print("ShadDEBUG-5")
 logging.basicConfig(stream=sys.stdout, level=log_level)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 iface = gr.Interface(fn=chatbot,
@@ -162,7 +165,7 @@ iface = gr.Interface(fn=chatbot,
                      outputs="text",
                      title="Email data query")
 
- 
+print("ShadDEBUG-6")
 from langchain.llms import LlamaCpp
 from langchain.globals import set_llm_cache
 from langchain.cache import InMemoryCache
@@ -170,7 +173,7 @@ from langchain.cache import InMemoryCache
 #from langchain.globals import set_debug
 #set_debug(True)
 
-
+print("ShadDEBUG-7")
 if useopenai:
     from langchain.chat_models import ChatOpenAI
     modelname = config['api']['openai_modelname']
@@ -202,11 +205,12 @@ else:
 
 
 
- 
+print("ShadDEBUG-8")
 service_context = ServiceContext.from_defaults(
     llm=llm, embed_model=embed_modelname
 )
 
+print("ShadDEBUG-9")
 index_directory=''
 if indextype == 'basic':
     index_directory = basic_idx_dir
@@ -229,7 +233,7 @@ else:
     rate = tts.getProperty('rate')
     tts.setProperty('rate', rate-50)
 
-
+print("ShadDEBUG-LoadIndex")
 # load index
 storage_context = StorageContext.from_defaults(persist_dir=index_directory)
 index = load_index_from_storage(storage_context=storage_context, service_context=service_context)   
@@ -262,6 +266,7 @@ query_engine.update_prompts(
 
 iface.launch( share=False, server_name=serverip, server_port=int(serverport), ssl_verify=False, ssl_keyfile=sslkey, ssl_certfile=sslcert)
 
+print("ShadDEBUG-MainDoctest")
 # Added for running doctest
 if __name__ == "__main__":
     import doctest
