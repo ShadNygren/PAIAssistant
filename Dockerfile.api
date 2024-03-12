@@ -143,6 +143,7 @@ RUN mkdir /app/api/data/kwaai/
 RUN ls -al /app/api/data/kwaai/
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/Kwaai.zip" -o "/app/api/data/kwaai/Kwaai.zip"
 RUN unzip /app/api/data/kwaai/Kwaai.zip
+RUN find / -name "libcuda.so.*"
 RUN python createindex.py
 
 RUN ls -al
