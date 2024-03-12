@@ -72,6 +72,7 @@ RUN dpkg -i -E amazon-cloudwatch-agent.deb
 RUN ls -al
 RUN ls -al /
 RUN ls -al /opt/
+RUN /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m docker -s -c:/app/amazon-cloudwatch-agent.json
 
 EXPOSE 4000
 #EXPOSE 7860
