@@ -18,7 +18,22 @@ from inference import main as generateVideo
 import pyttsx3
 
 def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile):
+    """
+    Runs video generation inference using specified parameters and inputs.
     
+    Constructs a command with dynamic parameters for video generation and invokes
+    the `generateVideo` function with this command.
+    
+    Parameters:
+    checkpoint_path (str): Path to the model checkpoint.
+    face_video (str): Path to the face video file.
+    audio_file (str): Path to the audio file.
+    resize_factor (int): Resize factor for the video generation.
+    outfile (str): Output path for the generated video.
+    
+    >>> run_inference("./checkpoints/model.pth", "face.mp4", "audio.wav", 2, "out.mp4")
+    ['./checkpoints/model.pth', 'face.mp4', 'audio.wav', 2, 'out.mp4']
+    """
     # Construct the command with dynamic parameters
     command = [        
         "--checkpoint_path", checkpoint_path,
@@ -33,6 +48,20 @@ def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfil
 
 
 def play_sound_then_delete(path_to_wav):
+    """
+    Plays a sound from the specified WAV file and deletes the file afterwards.
+    
+    This function starts playback of the sound file in a new thread. Once playback
+    is complete, it attempts to delete the WAV file. If any errors occur during
+    playback or deletion, they are printed to the console.
+    
+    Parameters:
+    path_to_wav (str): The file path to the WAV file to be played and deleted.
+    
+    Note: Actual sound playback and file deletion are not performed in the doctest.
+    
+    >>> play_sound_then_delete("example.wav")  # doctest: +SKIP
+    """
     def play_and_delete():
         try:
             wave_obj = sa.WaveObject.from_wave_file(path_to_wav)
@@ -46,6 +75,7 @@ def play_sound_then_delete(path_to_wav):
                 print(f"File {path_to_wav} successfully deleted.")
             except Exception as e:
                 print(f"Error deleting file: {e}")
+            pass
      # Start playback in a new thread
     threading.Thread(target=play_and_delete, daemon=True).start()
 
@@ -231,3 +261,8 @@ query_engine.update_prompts(
 
 
 iface.launch( share=False, server_name=serverip, server_port=int(serverport), ssl_verify=False, ssl_keyfile=sslkey, ssl_certfile=sslcert)
+
+# Added for running doctest
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
