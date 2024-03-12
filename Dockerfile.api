@@ -134,6 +134,7 @@ RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/huggingface.co/TheBlok
 #COPY openchat_3.5.Q4_K_M.gguf ./models/openchat_3.5.Q4_K_M.gguf
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/wav2lip/wav2lip_gan.pth" -o "/app/api/checkpoints/wav2lip_gan.pth"
 
+WORKDIR /app/api
 RUN ls -al /
 RUN ls -al /app/
 RUN ls -al /app/api/
@@ -142,6 +143,7 @@ RUN mkdir /app/api/data/kwaai/
 RUN ls -al /app/api/data/kwaai/
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/Kwaai.zip" -o "/app/api/data/kwaai/Kwaai.zip"
 RUN unzip /app/api/data/kwaai/Kwaai.zip
+RUN python createindex.py
 
 RUN ls -al
 #RUN ls -al ./models
