@@ -1,4 +1,18 @@
-FROM pytorch/pytorch:latest
+#FROM pytorch/pytorch:latest
+FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-devel
+
+ARG ARG_AWS_ACCESS_KEY
+ARG ARG_AWS_SECRET_ACCESS_KEY
+ARG ARG_AWS_DEFAULT_REGION
+
+ARG ARG_AWS_ACCESS_KEY="Pass Your AWS_ACCESS_KEY using --build-arg"
+ARG ARG_AWS_SECRET_ACCESS_KEY="Pass Your AWS_SECRET_ACCESS_KEY using --build-arg"
+ARG ARG_AWS_DEFAULT_REGION="Pass Your AWS_DEFAULT_REGION using --build-arg"
+
+ENV AWS_ACCESSKEY=$AWS_ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+ENV AWS_DEFAULT_REGION=us-west-2
 
 RUN echo 'APT::Install-Suggests "0";' >> /etc/apt/apt.conf.d/00-docker
 RUN echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-docker
@@ -6,33 +20,133 @@ RUN echo 'APT::Install-Recommends "0";' >> /etc/apt/apt.conf.d/00-docker
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get update && \
     apt-get install -y \
+        sudo \
         net-tools \
         python3.10 \
         python3-pip \
+        libpython3.10 \
         build-essential \
+        git \
+        unzip \
+        #cuda-toolkit \
         libasound2-dev \
-        #npm \
+        espeak \
+        #espeak-ng \
+        #libgl1-mesa-glx \
+        #ffmpeg \
+        #libsm6 \
+        #libext \
+        #python3-opencv \
+        #opencv-python-headless \
+        libgl1 \
+        libgtk2.0-dev \
+        npm \
         curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN usermod -aG sudo root
+
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
     update-alternatives --config python3
 
-#WORKDIR /app/web
-#COPY web/package*.json ./
-#RUN npm install
+RUN find / -name "*cuda*"
+RUN find / -name "*cuBLAS*"
+RUN find / -name "nvcc"
+#RUN nvidia-smi
 
-#COPY web/ .
+RUN whoami
+RUN pwd
+RUN ls -al .
+
+RUN ls -al /
+
+RUN ls -al /workspace
+
+WORKDIR /app/web
+COPY web/package*.json ./
+#RUN npm cache clear
+#RUN npm cache clean --force
+RUN npm install
+
+COPY web/ .
+
+RUN ls -al /workspace
 
 WORKDIR /app/api
 COPY api/ .
 
-RUN pip install -r requirements.txt
+RUN ls -al /workspace
 
-EXPOSE 4000
+RUN pip3 install opencv-python
+
+RUN pip3 install numpy==1.22.0
+
+#RUN pip3 install espeakng
+#RUN pip3 install python-espeak-ng
+
+WORKDIR /app
+RUN pwd
+RUN ls -al
+
+#RUN git clone https://github.com/ShadNygren/llama-cpp-python.git
+RUN git clone --recurse-submodules https://github.com/ShadNygren/llama-cpp-python.git
+#RUN cd llama-cpp-python
+RUN pip3 install -e llama-cpp-python
+#RUN cd ..
+
+RUN ls -al
+
+COPY setupenv.sh .
+#RUN cd PAIAssistant
+RUN chmod +x ./setupenv.sh
+RUN ./setupenv.sh
+# install -r requirements.txt is being done at the end of setupenv.sh
+#RUN pip install -r requirements.txt
+
+RUN pwd
+RUN ls -al
+
+# echo installing AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscli2.zip"
+RUN unzip -q awscli2.zip
+RUN ./aws/install
+RUN aws --version
+RUN echo TODAY IS 2024-03-07 01:01am
+RUN echo "$AWS_DEFAULT_REGION"
+RUN aws configure set default.region "$AWS_DEFAULT_REGION"
+
+RUN curl "https://amazoncloudwatch-agent.s3.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb" -o "amazon-cloudwatch-agent.deb"
+RUN dpkg -i -E amazon-cloudwatch-agent.deb
+
+RUN whoami
+RUN pwd
+RUN ls -al .
+RUN ls -al /workspace
+#Unable to checkin model files etc due to size, you have to copy them manually from huggingface openchat_3.5.Q4_K_M.gguf and wav2lip checkpoints from https://drive.google.com/drive/folders/1I-0dNLfFOSFwrfqjNa-SXuwaURHE5K4k and copy to api/checkpoints folder
+#RUN aws s3 cp s3://paiassistant/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf /workspace/app/api/checkpoints/
+#RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip_gan.pth /workspace/app/api/checkpoints/
+#RUN aws s3 cp s3://paiassistant/wav2lip/wav2lip.gif /workspace/app/api/checkpoints/
+#RUN aws s3 cp s3://paiassistant/wav2lip/test.wav /workspace/app/api/checkpoints/
+#RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf" -o "./models/openchat_3.5.Q4_K_M.gguf"#
+#RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf" -o "./checkpoints/openchat_3.5.Q4_K_M.gguf"
+RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf" -o "/app/api/models/openchat_3.5.Q4_K_M.gguf"
+#COPY openchat_3.5.Q4_K_M.gguf ./models/openchat_3.5.Q4_K_M.gguf
+RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/wav2lip/wav2lip_gan.pth" -o "/app/api/checkpoints/wav2lip_gan.pth"
+
+RUN ls -al
+#RUN ls -al ./models
+#RUN ls -al ./checkpoints
+
+#I have not uploaded the transcripts to github, i can provide a zip file to shared drive so you can move them over for indexing using createindex.py after dropping it to data\kwaai
+
+#EXPOSE 4000
 EXPOSE 7860
 
 ENV OPENAI_API_KEY <SAMPLE_OPENAI_API_KEY>
 
+WORKDIR /app/api
+#CMD ["sh", "-c", "python api.py & npm start"]
+#CMD ["sh","-c","whoami && pwd && ls && python api.py"]
 CMD ["sh", "-c", "python api.py"]
+#CMD ["sh", "-c", "npm start"]
