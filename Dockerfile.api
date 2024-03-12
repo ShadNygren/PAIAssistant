@@ -133,6 +133,12 @@ RUN ls -al /workspace
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/huggingface.co/TheBloke/openchat_3.5-GGUF/blob/main/openchat_3.5.Q4_K_M.gguf" -o "/app/api/models/openchat_3.5.Q4_K_M.gguf"
 #COPY openchat_3.5.Q4_K_M.gguf ./models/openchat_3.5.Q4_K_M.gguf
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/wav2lip/wav2lip_gan.pth" -o "/app/api/checkpoints/wav2lip_gan.pth"
+
+RUN ls -al /
+RUN ls -al /app/
+RUN ls -al /app/api/
+RUN ls -al /app/api/data/
+RUN ls -al /app/api/data/kwaai/
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/Kwaai.zip" -o "/app/api/data/kwaai/Kwaai.zip"
 RUN unzip /app/api/data/kwaai/Kwaai.zip
 
