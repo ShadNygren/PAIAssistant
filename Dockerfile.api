@@ -138,6 +138,7 @@ RUN ls -al /
 RUN ls -al /app/
 RUN ls -al /app/api/
 RUN ls -al /app/api/data/
+RUN mkdir /app/api/data/kwaai/
 RUN ls -al /app/api/data/kwaai/
 RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/Kwaai.zip" -o "/app/api/data/kwaai/Kwaai.zip"
 RUN unzip /app/api/data/kwaai/Kwaai.zip
