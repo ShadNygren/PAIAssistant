@@ -1,3 +1,19 @@
+"""
+License:
+- This code is released under the Apache License 2.0. See LICENSE file for full license text.
+
+Copyright:
+- Original Code (2024) by Balaji Lakshmanan.
+- Code Revisions (2024) by Shad Nygren / Virtual Hipster Corporation.
+
+Contributions:
+- Added comprehensive docstrings and doctests to improve documentation and testability (Contributed by Shad Nygren, with assistance from ChatGPT).
+- Enhanced robustness through comprehensive try-except error handling and refined code structure for better readability and maintenance (Contributed by Shad Nygren, with assistance from ChatGPT).
+
+Note:
+- Contributions by ChatGPT were under the guidance and specifications provided by the code's authors, ensuring alignment with project goals and standards.
+"""
+
 from llama_index import SimpleDirectoryReader 
 from llama_index import ServiceContext
 from langchain.chat_models import ChatOpenAI
