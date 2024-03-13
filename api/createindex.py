@@ -27,13 +27,49 @@ useopenai = config.getboolean('index', 'useopenai')
 
         
 def check_and_create_directory(directory_path):
+    """
+    Checks if a directory exists at the specified path. If not, creates the directory.
+    
+    Parameters:
+    directory_path (str): The file system path where the directory should be checked/created.
+    
+    Returns:
+    None
+    
+    >>> import tempfile, os, shutil
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> test_dir = os.path.join(temp_dir, 'new_dir')
+    >>> check_and_create_directory(test_dir)  # doctest: +ELLIPSIS
+    Directory '...' created successfully.
+    >>> os.path.isdir(test_dir)
+    True
+    >>> shutil.rmtree(temp_dir)  # Clean up the created temporary directory
+    """
+        
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
         print(f"Directory '{directory_path}' created successfully.")
     else:
         print(f"Directory '{directory_path}' already exists.")
         
-def construct_basic_index(src_directory_path,index_directory):        
+def construct_basic_index(src_directory_path,index_directory):
+    """
+    Constructs a basic index from documents in the specified source directory and saves it to the index directory.
+    
+    This function initializes a language model based on the configuration (OpenAI or a local model),
+    reads documents from the source directory, creates a vector store index from these documents,
+    and persists the index in the specified directory.
+
+    Parameters:
+    src_directory_path (str): The file path to the source directory containing documents to index.
+    index_directory (str): The file path to the directory where the index should be saved.
+    
+    Returns:
+    VectorStoreIndex: The constructed and persisted vector store index.
+
+    >>> construct_basic_index('path/to/source', 'path/to/index') # doctest: +SKIP
+    """
+        
     check_and_create_directory(index_directory)     
     if useopenai:
         from langchain.chat_models import ChatOpenAI
@@ -65,7 +101,32 @@ def construct_basic_index(src_directory_path,index_directory):
     return index
 
 def construct_sentencewindow_index(src_directory_path,index_directory):    
+    """
+    Constructs a sentence window index from documents in the specified source directory. 
+    This index is specifically designed to enhance search capabilities by considering the 
+    context of sentences surrounding search terms. The constructed index is saved to the 
+    specified index directory.
+
+    Depending on the configuration, this function initializes a language model (OpenAI or 
+    a local LlamaCpp model), reads documents from the source directory, and uses these 
+    documents to build a sentence window index. This index is then persisted in the 
+    provided directory.
+
+    Parameters:
+    src_directory_path (str): The file path to the source directory containing documents to index.
+    index_directory (str): The file path to the directory where the index should be saved.
     
+    Returns:
+    The constructed sentence window index object. The specific type of this object depends 
+    on the implementation of `build_sentence_window_index`.
+
+    Example:
+    Given the complexity and external dependencies involved in index construction, this 
+    example is illustrative and not meant to be executed directly.
+
+    >>> construct_sentencewindow_index('path/to/source', 'path/to/index') # doctest: +SKIP
+    """
+
     if useopenai:
         from langchain.chat_models import ChatOpenAI
         modelname = config['api']['openai_modelname']
@@ -92,7 +153,33 @@ def construct_sentencewindow_index(src_directory_path,index_directory):
     )
     return index
 
-def construct_automerge_index(src_directory_path,index_directory):    
+def construct_automerge_index(src_directory_path,index_directory):
+    """
+    Constructs an automerge index from documents in the specified source directory. 
+    This index type supports merging similar documents automatically, enhancing the 
+    search experience by consolidating information. The constructed index is saved to the 
+    specified index directory.
+
+    Depending on the configuration, this function initializes a language model (either 
+    OpenAI or a local LlamaCpp model), reads documents from the source directory, and 
+    employs these documents to build an automerge index. The index is subsequently 
+    persisted in the designated directory.
+
+    Parameters:
+    src_directory_path (str): The file path to the source directory containing documents for indexing.
+    index_directory (str): The file path to the directory where the index should be saved.
+    
+    Returns:
+    The constructed automerge index object. The specific type of this object depends on the 
+    implementation details of `build_automerging_index`.
+
+    Example:
+    Due to the function's complexity and its reliance on external dependencies, the following example 
+    is provided for illustrative purposes and is not intended to be executed as part of doctests.
+
+    >>> construct_automerge_index('path/to/source', 'path/to/index') # doctest: +SKIP
+    """
+
     if useopenai:
         from langchain.chat_models import ChatOpenAI
         modelname = config['api']['openai_modelname']
