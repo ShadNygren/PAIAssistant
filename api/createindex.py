@@ -25,8 +25,47 @@ modelname = config['index']['modelname']
 embed_modelname = config['index']['embedmodel']
 useopenai = config.getboolean('index', 'useopenai')
 
-        
+
+
+
 def check_and_create_directory(directory_path):
+    """
+    Checks if a directory exists at the specified path. If not, creates the directory.
+    
+    This function now includes error handling to catch exceptions that may occur during the 
+    directory check or creation process, such as permissions issues or filesystem errors. 
+    Error messages are logged, providing clear feedback for troubleshooting.
+    
+    Parameters:
+    directory_path (str): The file system path where the directory should be checked/created.
+    
+    Returns:
+    None
+    
+    >>> import tempfile, os, shutil
+    >>> temp_dir = tempfile.mkdtemp()
+    >>> test_dir = os.path.join(temp_dir, 'new_dir')
+    >>> check_and_create_directory(test_dir)  # doctest: +ELLIPSIS
+    Directory '...' created successfully.
+    >>> os.path.isdir(test_dir)
+    True
+    >>> shutil.rmtree(temp_dir)  # Clean up the created temporary directory
+    """
+    try:
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+            logging.info(f"Directory '{directory_path}' created successfully.")
+        else:
+            logging.info(f"Directory '{directory_path}' already exists.")
+    except PermissionError:
+        logging.error(f"Permission denied: Unable to access or create the directory '{directory_path}'. Check your permissions.")
+        raise
+    except OSError as e:
+        logging.error(f"OS error occurred while accessing or creating the directory '{directory_path}'. Error: {e}")
+        raise
+
+
+def check_and_create_directory_original(directory_path):
     """
     Checks if a directory exists at the specified path. If not, creates the directory.
     
@@ -51,7 +90,8 @@ def check_and_create_directory(directory_path):
         print(f"Directory '{directory_path}' created successfully.")
     else:
         print(f"Directory '{directory_path}' already exists.")
-        
+
+
 def construct_basic_index(src_directory_path,index_directory):
     """
     Constructs a basic index from documents in the specified source directory and saves it to the index directory.
@@ -236,7 +276,8 @@ def construct_sentencewindow_index_original(src_directory_path,index_directory):
     )
     return index
 
-def construct_automerge_index(src_directory_path,index_directory):
+
+def construct_automerge_index(src_directory_path, index_directory):
     """
     Constructs an automerge index from documents in the specified source directory. 
     This index type supports merging similar documents automatically, enhancing the 
@@ -262,7 +303,50 @@ def construct_automerge_index(src_directory_path,index_directory):
 
     >>> construct_automerge_index('path/to/source', 'path/to/index') # doctest: +SKIP
     """
+    try:
+        check_and_create_directory(index_directory)
+    except Exception as e:
+        logging.error(f"Failed to create or access the index directory '{index_directory}'. Ensure it is a valid path and writable. Error: {e}")
+        raise SystemExit("Exiting due to directory access issue.")
 
+    try:
+        if useopenai:
+            llm = ChatOpenAI(temperature=0.1, model_name=config['api']['openai_modelname'])
+        else:
+            llm = LlamaCpp(
+                model_path="./models/" + config['api']['local_modelname'],
+                n_gpu_layers=-1,  # This signifies using all available GPU layers; adjust as necessary.
+                n_batch=4096,
+                n_ctx=4096,
+                n_threads=8,
+                temperature=0.1,
+                f16_kv=True
+            )
+    except Exception as e:
+        logging.error(f"Failed to initialize the language model for automerge index construction. Check the model configuration and paths. Error: {e}")
+        raise SystemExit("Exiting due to language model initialization issue.")
+
+    try:
+        documents = SimpleDirectoryReader(src_directory_path).load_data()
+    except Exception as e:
+        logging.error(f"Failed to read documents from '{src_directory_path}'. Check if the directory exists, is readable, and contains valid documents. Error: {e}")
+        raise SystemExit("Exiting due to document reading issue.")
+
+    try:
+        index = build_automerging_index(
+            documents,
+            llm,
+            embed_model=embed_modelname,
+            save_dir=index_directory
+        )
+    except Exception as e:
+        logging.error(f"Failed to construct or persist the automerge index. Check the documents' format, the service context, and the index directory's writability. Error: {e}")
+        raise SystemExit("Exiting due to automerge index construction or persisting issue.")
+
+    return index
+
+
+def construct_automerge_index_original(src_directory_path,index_directory):
     if useopenai:
         from langchain.chat_models import ChatOpenAI
         modelname = config['api']['openai_modelname']
