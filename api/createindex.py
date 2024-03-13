@@ -69,7 +69,46 @@ def construct_basic_index(src_directory_path,index_directory):
 
     >>> construct_basic_index('path/to/source', 'path/to/index') # doctest: +SKIP
     """
-        
+    try:
+        check_and_create_directory(index_directory)
+    except Exception as e:
+        logging.error(f"Failed to create or access the index directory '{index_directory}'. Please ensure it is a valid path and writable. Error: {e}")
+        raise SystemExit("Exiting due to directory access issue.")
+
+    try:
+        if useopenai:
+            llm = ChatOpenAI(temperature=0.1, model_name=config['api']['openai_modelname'])
+        else:
+            llm = LlamaCpp(
+                model_path="./models/"+config['api']['local_modelname'],
+                n_gpu_layers=40,  # Adjust based on your model and GPU VRAM
+                n_batch=4096,
+                n_ctx=4096,
+                n_threads=8,
+                temperature=0.1,
+                f16_kv=True
+            )
+    except Exception as e:
+        logging.error(f"Failed to initialize the language model. Please check the model configuration and paths. Error: {e}")
+        raise SystemExit("Exiting due to language model initialization issue.")
+
+    try:
+        documents = SimpleDirectoryReader(src_directory_path).load_data()
+    except Exception as e:
+        logging.error(f"Failed to read documents from '{src_directory_path}'. Please check if the directory exists, is readable, and contains valid documents. Error: {e}")
+        raise SystemExit("Exiting due to document reading issue.")
+
+    try:
+        service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_modelname)
+        index = VectorStoreIndex.from_documents(documents, service_context=service_context)
+        index.storage_context.persist(persist_dir=index_directory)
+    except Exception as e:
+        logging.error(f"Failed to construct or persist the index. Please check the documents' format, the service context, and the index directory's writability. Error: {e}")
+        raise SystemExit("Exiting due to index construction or persisting issue.")
+
+    return index
+
+def construct_basic_index_original(src_directory_path,index_directory):
     check_and_create_directory(index_directory)     
     if useopenai:
         from langchain.chat_models import ChatOpenAI
