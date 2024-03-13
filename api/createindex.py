@@ -11,17 +11,6 @@ import os
 import logging
 import configparser
 
-#config = configparser.ConfigParser()
-#config.read('config.ini')
-#
-## get config values
-#src_data_dir = config['index']['src_data_dir']
-#basic_idx_dir = config['index']['basic_idx_dir']
-#sent_win_idx_dir = config['index']['sent_win_idx_dir']
-#auto_mrg_idx_dir = config['index']['auto_mrg_idx_dir']
-#modelname = config['index']['modelname']
-#embed_modelname = config['index']['embedmodel']
-#useopenai = config.getboolean('index', 'useopenai')
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -61,7 +50,7 @@ modelname = get_config_value('index', 'modelname')
 embed_modelname = get_config_value('index', 'embedmodel')
 useopenai = get_config_value('index', 'useopenai', is_boolean=True)
 
-
+#--------------------
 
 def check_and_create_directory(directory_path):
     """
@@ -99,33 +88,7 @@ def check_and_create_directory(directory_path):
         logging.error(f"OS error occurred while accessing or creating the directory '{directory_path}'. Error: {e}")
         raise
 
-
-def check_and_create_directory_original(directory_path):
-    """
-    Checks if a directory exists at the specified path. If not, creates the directory.
-    
-    Parameters:
-    directory_path (str): The file system path where the directory should be checked/created.
-    
-    Returns:
-    None
-    
-    >>> import tempfile, os, shutil
-    >>> temp_dir = tempfile.mkdtemp()
-    >>> test_dir = os.path.join(temp_dir, 'new_dir')
-    >>> check_and_create_directory(test_dir)  # doctest: +ELLIPSIS
-    Directory '...' created successfully.
-    >>> os.path.isdir(test_dir)
-    True
-    >>> shutil.rmtree(temp_dir)  # Clean up the created temporary directory
-    """
-        
-    if not os.path.exists(directory_path):
-        os.makedirs(directory_path)
-        print(f"Directory '{directory_path}' created successfully.")
-    else:
-        print(f"Directory '{directory_path}' already exists.")
-
+#--------------------
 
 def construct_basic_index(src_directory_path,index_directory):
     """
@@ -183,37 +146,7 @@ def construct_basic_index(src_directory_path,index_directory):
 
     return index
 
-def construct_basic_index_original(src_directory_path,index_directory):
-    check_and_create_directory(index_directory)     
-    if useopenai:
-        from langchain.chat_models import ChatOpenAI
-        modelname = config['api']['openai_modelname']
-        llm =ChatOpenAI(temperature=0.1, model_name=modelname)
-    else:
-        modelname = config['api']['local_modelname']
-        n_gpu_layers = 40  # Change this value based on your model and your GPU VRAM pool.
-        n_batch = 4096  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
-        llm = LlamaCpp(
-        model_path="./models/"+ modelname,
-        n_gpu_layers=n_gpu_layers,
-        n_batch=n_batch,
-        n_ctx=4096,
-        n_threads=8,
-        temperature=0.1,
-        f16_kv=True
-        )
-
-    service_context = ServiceContext.from_defaults(
-        llm=llm, embed_model=embed_modelname
-    )
-   
-    documents = SimpleDirectoryReader(src_directory_path).load_data()
-    index = VectorStoreIndex.from_documents(documents,
-                                            service_context=service_context)
-      
-    index.storage_context.persist(persist_dir=index_directory)     
-    return index
-
+#--------------------
 
 def construct_sentencewindow_index(src_directory_path, index_directory):    
     """
@@ -283,34 +216,7 @@ def construct_sentencewindow_index(src_directory_path, index_directory):
 
     return index
 
-
-def construct_sentencewindow_index_original(src_directory_path,index_directory):    
-    if useopenai:
-        from langchain.chat_models import ChatOpenAI
-        modelname = config['api']['openai_modelname']
-        llm =ChatOpenAI(temperature=0.1, model_name=modelname)
-    else:
-        modelname = config['api']['local_modelname']
-        n_gpu_layers = 40  # Change this value based on your model and your GPU VRAM pool.
-        n_batch = 4096  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
-        llm = LlamaCpp(
-        model_path="./models/"+ modelname,
-        n_gpu_layers=n_gpu_layers,
-        n_batch=n_batch,
-        n_ctx=4096,
-        n_threads=8,
-        temperature=0.1,
-        f16_kv=True
-        )
-    documents = SimpleDirectoryReader(src_directory_path).load_data()
-    index = build_sentence_window_index(
-    documents,
-    llm,
-    embed_model=embed_modelname,
-    save_dir=index_directory
-    )
-    return index
-
+#--------------------
 
 def construct_automerge_index(src_directory_path, index_directory):
     """
@@ -380,44 +286,7 @@ def construct_automerge_index(src_directory_path, index_directory):
 
     return index
 
-
-def construct_automerge_index_original(src_directory_path,index_directory):
-    if useopenai:
-        from langchain.chat_models import ChatOpenAI
-        modelname = config['api']['openai_modelname']
-        llm =ChatOpenAI(temperature=0.1, model_name=modelname)
-    else:
-        modelname = config['api']['local_modelname']
-        n_gpu_layers = -1  # Change this value based on your model and your GPU VRAM pool.
-        n_batch = 4096  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
-        llm = LlamaCpp(
-        model_path="./models/"+ modelname,
-        n_gpu_layers=n_gpu_layers,
-        n_batch=n_batch,
-        n_ctx=4096,
-        n_threads=8,
-        temperature=0.1,
-        f16_kv=True
-        )
-    documents = SimpleDirectoryReader(src_directory_path).load_data()
-    index = build_automerging_index(
-    documents,
-    llm,
-    embed_model=embed_modelname,
-    save_dir=index_directory
-    )
-    return index
- 
-    
-#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-#logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
-# 
-##Create basic index
-#index = construct_basic_index(src_data_dir,basic_idx_dir)
-##create sentencewindow index
-#sentindex = construct_sentencewindow_index(src_data_dir,sent_win_idx_dir)
-##create automerge index
-#autoindex = construct_automerge_index(src_data_dir,auto_mrg_idx_dir)
+#--------------------
 
 # Function calls for constructing indexes with error handling
 try:
