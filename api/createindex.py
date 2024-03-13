@@ -11,20 +11,55 @@ import os
 import logging
 import configparser
 
+#config = configparser.ConfigParser()
+#config.read('config.ini')
+#
+## get config values
+#src_data_dir = config['index']['src_data_dir']
+#basic_idx_dir = config['index']['basic_idx_dir']
+#sent_win_idx_dir = config['index']['sent_win_idx_dir']
+#auto_mrg_idx_dir = config['index']['auto_mrg_idx_dir']
+#modelname = config['index']['modelname']
+#embed_modelname = config['index']['embedmodel']
+#useopenai = config.getboolean('index', 'useopenai')
+
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+#logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+
+# Attempt to read the configuration file
 config = configparser.ConfigParser()
-config.read('config.ini')
+try:
+    config.read('config.ini')
+    if len(config.sections()) == 0:
+        raise FileNotFoundError("The 'config.ini' file was not found or is empty.")
+except FileNotFoundError as e:
+    logging.error(f"Failed to read the configuration file: {e}")
+    sys.exit("Exiting due to missing or empty configuration file.")
 
+# Safely retrieve configuration values with error handling
+def get_config_value(section, key, is_boolean=False):
+    try:
+        if is_boolean:
+            return config.getboolean(section, key)
+        else:
+            return config[section][key]
+    except (configparser.NoSectionError, configparser.NoOptionError) as e:
+        logging.error(f"Missing section/key in configuration file: {e}")
+        sys.exit(f"Exiting due to missing configuration for '{section}' -> '{key}'.")
+    except ValueError as e:
+        logging.error(f"Invalid value in configuration file: {e}")
+        sys.exit(f"Exiting due to invalid value for '{section}' -> '{key}'.")
 
-
-# get config values
-src_data_dir = config['index']['src_data_dir']
-basic_idx_dir = config['index']['basic_idx_dir']
-sent_win_idx_dir = config['index']['sent_win_idx_dir']
-auto_mrg_idx_dir = config['index']['auto_mrg_idx_dir']
-modelname = config['index']['modelname']
-embed_modelname = config['index']['embedmodel']
-useopenai = config.getboolean('index', 'useopenai')
-
+# Use the safe retrieval function to get config values
+src_data_dir = get_config_value('index', 'src_data_dir')
+basic_idx_dir = get_config_value('index', 'basic_idx_dir')
+sent_win_idx_dir = get_config_value('index', 'sent_win_idx_dir')
+auto_mrg_idx_dir = get_config_value('index', 'auto_mrg_idx_dir')
+modelname = get_config_value('index', 'modelname')
+embed_modelname = get_config_value('index', 'embedmodel')
+useopenai = get_config_value('index', 'useopenai', is_boolean=True)
 
 
 
@@ -374,13 +409,37 @@ def construct_automerge_index_original(src_directory_path,index_directory):
     return index
  
     
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
- 
- 
-#Create basic index
-index = construct_basic_index(src_data_dir,basic_idx_dir)
-#create sentencewindow index
-sentindex = construct_sentencewindow_index(src_data_dir,sent_win_idx_dir)
-#create automerge index
-autoindex = construct_automerge_index(src_data_dir,auto_mrg_idx_dir)
+#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+#logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+# 
+##Create basic index
+#index = construct_basic_index(src_data_dir,basic_idx_dir)
+##create sentencewindow index
+#sentindex = construct_sentencewindow_index(src_data_dir,sent_win_idx_dir)
+##create automerge index
+#autoindex = construct_automerge_index(src_data_dir,auto_mrg_idx_dir)
+
+# Function calls for constructing indexes with error handling
+try:
+    # Create basic index
+    index = construct_basic_index(src_data_dir, basic_idx_dir)
+except Exception as e:
+    logging.error(f"Failed to construct the basic index: {e}")
+    # Optionally, exit or handle the error appropriately
+    sys.exit(1)
+
+try:
+    # Create sentence window index
+    sentindex = construct_sentencewindow_index(src_data_dir, sent_win_idx_dir)
+except Exception as e:
+    logging.error(f"Failed to construct the sentence window index: {e}")
+    # Optionally, exit or handle the error appropriately
+    sys.exit(1)
+
+try:
+    # Create automerge index
+    autoindex = construct_automerge_index(src_data_dir, auto_mrg_idx_dir)
+except Exception as e:
+    logging.error(f"Failed to construct the automerge index: {e}")
+    # Optionally, exit or handle the error appropriately
+    sys.exit(1)
