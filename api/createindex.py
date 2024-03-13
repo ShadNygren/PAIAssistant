@@ -139,7 +139,8 @@ def construct_basic_index_original(src_directory_path,index_directory):
     index.storage_context.persist(persist_dir=index_directory)     
     return index
 
-def construct_sentencewindow_index(src_directory_path,index_directory):    
+
+def construct_sentencewindow_index(src_directory_path, index_directory):    
     """
     Constructs a sentence window index from documents in the specified source directory. 
     This index is specifically designed to enhance search capabilities by considering the 
@@ -165,7 +166,50 @@ def construct_sentencewindow_index(src_directory_path,index_directory):
 
     >>> construct_sentencewindow_index('path/to/source', 'path/to/index') # doctest: +SKIP
     """
+    try:
+        check_and_create_directory(index_directory)
+    except Exception as e:
+        logging.error(f"Failed to create or access the index directory '{index_directory}'. Ensure it is a valid path and writable. Error: {e}")
+        raise SystemExit("Exiting due to directory access issue.")
 
+    try:
+        if useopenai:
+            llm = ChatOpenAI(temperature=0.1, model_name=config['api']['openai_modelname'])
+        else:
+            llm = LlamaCpp(
+                model_path="./models/" + config['api']['local_modelname'],
+                n_gpu_layers=40,  # Adjust based on your model and GPU VRAM
+                n_batch=4096,
+                n_ctx=4096,
+                n_threads=8,
+                temperature=0.1,
+                f16_kv=True
+            )
+    except Exception as e:
+        logging.error(f"Failed to initialize the language model for sentence window index construction. Check the model configuration and paths. Error: {e}")
+        raise SystemExit("Exiting due to language model initialization issue.")
+
+    try:
+        documents = SimpleDirectoryReader(src_directory_path).load_data()
+    except Exception as e:
+        logging.error(f"Failed to read documents from '{src_directory_path}'. Check if the directory exists, is readable, and contains valid documents. Error: {e}")
+        raise SystemExit("Exiting due to document reading issue.")
+
+    try:
+        index = build_sentence_window_index(
+            documents,
+            llm,
+            embed_model=embed_modelname,
+            save_dir=index_directory
+        )
+    except Exception as e:
+        logging.error(f"Failed to construct or persist the sentence window index. Check the documents' format, the service context, and the index directory's writability. Error: {e}")
+        raise SystemExit("Exiting due to sentence window index construction or persisting issue.")
+
+    return index
+
+
+def construct_sentencewindow_index_original(src_directory_path,index_directory):    
     if useopenai:
         from langchain.chat_models import ChatOpenAI
         modelname = config['api']['openai_modelname']
