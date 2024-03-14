@@ -14,6 +14,10 @@ Note:
 - Contributions by ChatGPT were under the guidance and specifications provided by the code's authors, ensuring alignment with project goals and standards.
 """
 
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+#logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 from llama_index import StorageContext, load_index_from_storage, ServiceContext
 import gradio as gr
