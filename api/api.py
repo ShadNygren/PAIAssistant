@@ -34,6 +34,8 @@ from llama_index.prompts.base import PromptTemplate
 from inference import main as generateVideo
 import pyttsx3
 
+
+#--------------------
 print("ShadDEBUG-1")
 def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile):
     """
@@ -64,6 +66,7 @@ def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfil
     generateVideo(command)
     
 
+#--------------------
 print("ShadDEBUG-2")
 def play_sound_then_delete(path_to_wav):
     """
@@ -97,6 +100,8 @@ def play_sound_then_delete(path_to_wav):
      # Start playback in a new thread
     threading.Thread(target=play_and_delete, daemon=True).start()
 
+
+#--------------------
 print("ShadDEBUG-3")
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -121,6 +126,8 @@ log_level_str = config.get('api', 'loglevel', fallback='WARNING').upper()
 # Convert the log level string to a logging level
 log_level = getattr(logging, log_level_str, logging.WARNING)
 
+
+#--------------------
 print("ShadDEBUG-4")
 def chatbot(input_text):
     """
@@ -195,6 +202,8 @@ def chatbot(input_text):
         
     return jsonResponseStr
 
+
+#--------------------
 print("ShadDEBUG-5")
 logging.basicConfig(stream=sys.stdout, level=log_level)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
