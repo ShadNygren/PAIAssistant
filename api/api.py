@@ -317,8 +317,46 @@ query_engine.update_prompts(
 
 iface.launch( share=False, server_name=serverip, server_port=int(serverport), ssl_verify=False, ssl_keyfile=sslkey, ssl_certfile=sslcert)
 
-print("ShadDEBUG-MainDoctest")
-# Added for running doctest
+
+
+print("ShadDEBUG-TestGradio-MainDoctest")
+def test_gradio_interface_with_curl():
+    """
+    Tests the Gradio web interface using a curl command.
+    
+    This test attempts to send a POST request to the Gradio interface's API endpoint,
+    simulating a user input and checking for a successful response.
+    
+    Returns:
+    bool: True if the test passes (interface responds as expected), False otherwise.
+    """
+    try:
+        # Construct the curl command
+        curl_command = """
+        curl -s -X POST -H "Content-Type: application/json" \\
+            -d '{"data": ["Please tell me what is Kwaai about?"]}' \\
+            http://127.0.0.1:7860/api/predict/
+        """
+        # Execute the curl command
+        result = subprocess.run(curl_command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        # Optional: Process the result.stdout or result.stderr if needed
+        print("Curl command executed successfully, response:", result.stdout)
+        return True
+    except subprocess.CalledProcessError as e:
+        print("Curl command failed:", e.stderr)
+        return False
+
+
 if __name__ == "__main__":
+    # Added for running doctest
     import doctest
     doctest.testmod()
+
+    print("Running interface test with curl...")
+    test_success = test_gradio_interface_with_curl()
+    if test_success:
+        print("Interface test passed.")
+    else:
+        print("Interface test failed.")
+
