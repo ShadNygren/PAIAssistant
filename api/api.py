@@ -223,6 +223,76 @@ def chatbot(input_text):
 
     return jsonResponseStr
 
+#--------------------
+
+def chatbot_new(input_text):
+    """
+    Processes the input text through a chat model to generate a response, synthesizes speech from the response, 
+    generates a video using the synthesized speech, and constructs a JSON response containing the original 
+    response text, video, and audio file paths, along with citation data.
+
+    This function integrates several components: querying an indexed database, text-to-speech (TTS) conversion, 
+    video generation, and logging of operations. It leverages configured TTS engines and language models to 
+    produce an audio response, which is then used to generate a corresponding video.
+
+    Enhanced error handling ensures each step of the process is monitored, with errors logged for troubleshooting. 
+    The function returns a comprehensive JSON response with details of the operation's success or a descriptive 
+    error message.
+
+    Parameters:
+    input_text (str): User-provided text input for the chatbot to process.
+
+    Returns:
+    str: A JSON-formatted string containing the chatbot's response, paths to the generated audio and video 
+    files, and citation data extracted from the query engine's response, or an error message if the process fails.
+
+    Note: This function involves file operations, network communication, and external service calls, 
+    making it complex to directly test via doctests. The example below is illustrative.
+
+    >>> chatbot("How does the indexing process work?") # doctest: +SKIP
+    """
+    
+    global tts
+
+    logging.info("Received user text: %s", input_text)
+    jsonResponse = {"response": "", "video": "", "audio": "", "citation": []}
+    
+    try:
+        response = query_engine.query(input_text)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        output_audfile = f"output_{timestamp}.wav"
+        output_vidfile = f"output_{timestamp}.mp4"
+        output_path = f"../web/public/audio/output/{output_audfile}"
+        
+        # Text-to-Speech conversion
+        if ttsengine == 'coqui':
+            tts.tts_to_file(text=response.response, file_path=output_path)
+        elif ttsengine == 'gtts':
+            tts = gTTS(text=response.response, lang='en')
+            tts.save(output_path)
+        else:
+            tts.save_to_file(response.response, output_path)
+            tts.runAndWait()
+
+        # Video generation
+        checkpoint_path = "./checkpoints/wav2lip_gan.pth"
+        face_video = "media/Avatar.mp4"
+        audio_file = output_path
+        outfile = f"../web/public/video/output/{output_vidfile}"
+        resize_factor = 2
+        run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile)
+
+        # Constructing response
+        citation = [{"filename": node.metadata["file_name"], "text": node.get_text()} for node in response.source_nodes]
+        jsonResponse.update({"response": response.response, "video": output_vidfile, "audio": output_audfile, "citation": citation})
+        
+    except Exception as e:
+        logging.exception("Failed to process the chatbot request: %s", str(e))
+        jsonResponse.update({"error": "Failed to process request due to an internal error."})
+
+    return json.dumps(jsonResponse, indent=4)
+
+
 
 #--------------------
 logging.basicConfig(stream=sys.stdout, level=log_level)
