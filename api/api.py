@@ -41,36 +41,6 @@ import pyttsx3
 
 
 #--------------------
-print("ShadDEBUG-1")
-def run_inference_original(checkpoint_path, face_video, audio_file, resize_factor, outfile):
-    """
-    Runs video generation inference using specified parameters and inputs.
-    
-    Constructs a command with dynamic parameters for video generation and invokes
-    the `generateVideo` function with this command.
-    
-    Parameters:
-    checkpoint_path (str): Path to the model checkpoint.
-    face_video (str): Path to the face video file.
-    audio_file (str): Path to the audio file.
-    resize_factor (int): Resize factor for the video generation.
-    outfile (str): Output path for the generated video.
-    
-    >>> run_inference("./checkpoints/model.pth", "face.mp4", "audio.wav", 2, "out.mp4")
-    ['./checkpoints/model.pth', 'face.mp4', 'audio.wav', 2, 'out.mp4']
-    """
-    # Construct the command with dynamic parameters
-    command = [        
-        "--checkpoint_path", checkpoint_path,
-        "--face", face_video,
-        "--audio", audio_file,
-        "--resize_factor", str(resize_factor),
-        "--outfile", outfile
-    ]
-    print(command)    
-    generateVideo(command)
-
-#--------------------
 
 def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile):
     """
@@ -113,7 +83,6 @@ def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfil
 
 
 #--------------------
-print("ShadDEBUG-2")
 def play_sound_then_delete(path_to_wav):
     """
     Plays a sound from the specified WAV file and deletes the file afterwards.
@@ -148,7 +117,6 @@ def play_sound_then_delete(path_to_wav):
 
 
 #--------------------
-print("ShadDEBUG-3")
 config = configparser.ConfigParser()
 config.read('config.ini')
 
@@ -172,81 +140,6 @@ log_level_str = config.get('api', 'loglevel', fallback='WARNING').upper()
 # Convert the log level string to a logging level
 log_level = getattr(logging, log_level_str, logging.WARNING)
 
-
-#--------------------
-print("ShadDEBUG-4")
-def chatbot_original(input_text):
-    """
-    Processes the input text through a chat model to generate a response, synthesizes speech from the response, 
-    generates a video using the synthesized speech, and constructs a JSON response containing the original 
-    response text, video, and audio file paths, along with citation data.
-
-    This function integrates several components: querying an indexed database, text-to-speech (TTS) conversion, 
-    video generation, and logging of operations. It leverages configured TTS engines and language models to 
-    produce an audio response, which is then used to generate a corresponding video.
-
-    Parameters:
-    input_text (str): User-provided text input for the chatbot to process.
-
-    Returns:
-    str: A JSON-formatted string containing the chatbot's response, paths to the generated audio and video 
-    files, and citation data extracted from the query engine's response.
-
-    Note: This function involves file operations, network communication, and external service calls, 
-    making it complex to directly test via doctests. The example below is illustrative.
-
-    >>> chatbot("How does the indexing process work?") # doctest: +SKIP
-    """
-    global tts
-    print("User Text:" + input_text)    
-    
-    response =query_engine.query(input_text)        
- 
-    # Save the output
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    output_audfile=f"output_{timestamp}.wav"
-    output_vidfile=f"output_{timestamp}.mp4"
-    output_path = "../web/public/audio/output/"+output_audfile
-    
-    
-    if ttsengine == 'coqui':
-        tts.tts_to_file(text=response.response, file_path=output_path ) # , speaker_wav=["bruce.wav"], language="en",split_sentences=True)
-    elif ttsengine == 'gtts':
-        tts = gTTS(text=response.response, lang='en')
-        tts.save(output_path)
-    else:
-        tts.save_to_file(response.response , output_path)
-        tts.runAndWait()
-
-    checkpoint_path = "./checkpoints/wav2lip_gan.pth"
-    face_video = "media/Avatar.mp4"
-    audio_file = "../web/public/audio/output/"+output_audfile
-    outfile="../web/public/video/output/"+output_vidfile
-    resize_factor = 2
-    run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile)
-    #play_sound_then_delete(output_path)
-
-    #construct response object
-    # Building the citation list from source_nodes
-    citation = [
-        {
-            "filename": node.metadata["file_name"],
-            "text": node.get_text()
-        } for node in response.source_nodes
-    ]
-    
-    # Creating the JSON object structure
-    jsonResponse = {
-        "response": response.response,
-        "video": output_vidfile,
-        "audio": output_audfile,
-        "citation": citation
-    }
-    
-    # Convert to JSON string
-    jsonResponseStr = json.dumps(jsonResponse, indent=4)
-        
-    return jsonResponseStr
 
 #--------------------
 
@@ -329,7 +222,6 @@ def chatbot(input_text):
 
 
 #--------------------
-print("ShadDEBUG-5")
 logging.basicConfig(stream=sys.stdout, level=log_level)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 iface = gr.Interface(fn=chatbot,
@@ -337,7 +229,7 @@ iface = gr.Interface(fn=chatbot,
                      outputs="text",
                      title="Email data query")
 
-print("ShadDEBUG-6")
+
 from langchain.llms import LlamaCpp
 from langchain.globals import set_llm_cache
 from langchain.cache import InMemoryCache
@@ -345,7 +237,7 @@ from langchain.cache import InMemoryCache
 #from langchain.globals import set_debug
 #set_debug(True)
 
-print("ShadDEBUG-7")
+
 if useopenai:
     from langchain.chat_models import ChatOpenAI
     modelname = config['api']['openai_modelname']
@@ -376,13 +268,11 @@ else:
     )
 
 
-
-print("ShadDEBUG-8")
 service_context = ServiceContext.from_defaults(
     llm=llm, embed_model=embed_modelname
 )
 
-print("ShadDEBUG-9")
+
 index_directory=''
 if indextype == 'basic':
     index_directory = basic_idx_dir
@@ -405,7 +295,7 @@ else:
     rate = tts.getProperty('rate')
     tts.setProperty('rate', rate-50)
 
-print("ShadDEBUG-LoadIndex")
+
 # load index
 storage_context = StorageContext.from_defaults(persist_dir=index_directory)
 index = load_index_from_storage(storage_context=storage_context, service_context=service_context)   
@@ -440,7 +330,6 @@ iface.launch( share=False, server_name=serverip, server_port=int(serverport), ss
 
 
 
-print("ShadDEBUG-TestGradio-MainDoctest")
 def test_gradio_interface_with_curl():
     """
     Tests the Gradio web interface using a curl command.
