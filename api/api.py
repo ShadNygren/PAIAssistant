@@ -106,6 +106,27 @@ log_level = getattr(logging, log_level_str, logging.WARNING)
 
 print("ShadDEBUG-4")
 def chatbot(input_text):
+    """
+    Processes the input text through a chat model to generate a response, synthesizes speech from the response, 
+    generates a video using the synthesized speech, and constructs a JSON response containing the original 
+    response text, video, and audio file paths, along with citation data.
+
+    This function integrates several components: querying an indexed database, text-to-speech (TTS) conversion, 
+    video generation, and logging of operations. It leverages configured TTS engines and language models to 
+    produce an audio response, which is then used to generate a corresponding video.
+
+    Parameters:
+    input_text (str): User-provided text input for the chatbot to process.
+
+    Returns:
+    str: A JSON-formatted string containing the chatbot's response, paths to the generated audio and video 
+    files, and citation data extracted from the query engine's response.
+
+    Note: This function involves file operations, network communication, and external service calls, 
+    making it complex to directly test via doctests. The example below is illustrative.
+
+    >>> chatbot("How does the indexing process work?") # doctest: +SKIP
+    """
     global tts
     print("User Text:" + input_text)    
     
