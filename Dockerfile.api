@@ -145,8 +145,9 @@ RUN curl "https://paiassistant.s3.us-west-2.amazonaws.com/Kwaai.zip" -o "/app/ap
 RUN unzip /app/api/data/kwaai/Kwaai.zip
 RUN find / -name "libcuda.so.*"
 RUN export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/cuda-12.1/compat
-RUN ldconfig
 RUN find / -name "libllama.so"
+RUN export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/app/llama-cpp-python/llama_cpp
+RUN ldconfig
 RUN python createindex.py
 
 RUN ls -al
