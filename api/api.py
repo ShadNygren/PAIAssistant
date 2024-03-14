@@ -175,7 +175,7 @@ log_level = getattr(logging, log_level_str, logging.WARNING)
 
 #--------------------
 print("ShadDEBUG-4")
-def chatbot(input_text):
+def chatbot_original(input_text):
     """
     Processes the input text through a chat model to generate a response, synthesizes speech from the response, 
     generates a video using the synthesized speech, and constructs a JSON response containing the original 
@@ -247,6 +247,86 @@ def chatbot(input_text):
     jsonResponseStr = json.dumps(jsonResponse, indent=4)
         
     return jsonResponseStr
+
+#--------------------
+
+import logging
+from datetime import datetime
+import json
+
+def chatbot(input_text):
+    """
+    Processes the input text through a chat model to generate a response, synthesizes speech from the response, 
+    generates a video using the synthesized speech, and constructs a JSON response containing the original 
+    response text, video, and audio file paths, along with citation data.
+
+    This function integrates several components: querying an indexed database, text-to-speech (TTS) conversion, 
+    video generation, and logging of operations. It leverages configured TTS engines and language models to 
+    produce an audio response, which is then used to generate a corresponding video.
+
+    Parameters:
+    input_text (str): User-provided text input for the chatbot to process.
+
+    Returns:
+    str: A JSON-formatted string containing the chatbot's response, paths to the generated audio and video 
+    files, and citation data extracted from the query engine's response.
+
+    Note: This function involves file operations, network communication, and external service calls, 
+    making it complex to directly test via doctests. The example below is illustrative.
+
+    >>> chatbot("How does the indexing process work?") # doctest: +SKIP
+    """
+    global tts
+    logging.info("Received user text: " + input_text)
+
+    try:
+        response = query_engine.query(input_text)
+    except Exception as e:
+        logging.error(f"Error querying the engine: {e}")
+        return json.dumps({"error": "Failed to process query"})
+
+    # Save the output
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_audfile = f"output_{timestamp}.wav"
+    output_vidfile = f"output_{timestamp}.mp4"
+    output_path = "../web/public/audio/output/" + output_audfile
+
+    try:
+        if ttsengine == 'coqui':
+            tts.tts_to_file(text=response.response, file_path=output_path)
+        elif ttsengine == 'gtts':
+            tts = gTTS(text=response.response, lang='en')
+            tts.save(output_path)
+        else:
+            tts.save_to_file(response.response, output_path)
+            tts.runAndWait()
+    except Exception as e:
+        logging.error(f"Error during TTS conversion: {e}")
+        return json.dumps({"error": "Failed to generate audio response"})
+
+    checkpoint_path = "./checkpoints/wav2lip_gan.pth"
+    face_video = "media/Avatar.mp4"
+    audio_file = "../web/public/audio/output/" + output_audfile
+    outfile = "../web/public/video/output/" + output_vidfile
+    resize_factor = 2
+
+    try:
+        run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile)
+    except Exception as e:
+        logging.error(f"Error generating video: {e}")
+        return json.dumps({"error": "Failed to generate video"})
+
+    # Construct response object
+    try:
+        citation = [{"filename": node.metadata["file_name"], "text": node.get_text()} for node in response.source_nodes]
+        jsonResponse = {"response": response.response, "video": output_vidfile, "audio": output_audfile, "citation": citation}
+        jsonResponseStr = json.dumps(jsonResponse, indent=4)
+    except Exception as e:
+        logging.error(f"Error constructing response: {e}")
+        return json.dumps({"error": "Failed to construct response"})
+
+    return jsonResponseStr
+
 
 #--------------------
 print("ShadDEBUG-5")
