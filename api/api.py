@@ -14,6 +14,7 @@ Note:
 - Contributions by ChatGPT were under the guidance and specifications provided by the code's authors, ensuring alignment with project goals and standards.
 """
 
+import logging
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -41,7 +42,7 @@ import pyttsx3
 
 #--------------------
 print("ShadDEBUG-1")
-def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile):
+def run_inference_original(checkpoint_path, face_video, audio_file, resize_factor, outfile):
     """
     Runs video generation inference using specified parameters and inputs.
     
@@ -68,7 +69,48 @@ def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfil
     ]
     print(command)    
     generateVideo(command)
+
+#--------------------
+
+def run_inference(checkpoint_path, face_video, audio_file, resize_factor, outfile):
+    """
+    Runs video generation inference using specified parameters and inputs.
     
+    Constructs a command with dynamic parameters for video generation and invokes
+    the `generateVideo` function with this command.
+    
+    Parameters:
+    checkpoint_path (str): Path to the model checkpoint.
+    face_video (str): Path to the face video file.
+    audio_file (str): Path to the audio file.
+    resize_factor (int): Resize factor for the video generation.
+    outfile (str): Output path for the generated video.
+    
+    >>> run_inference("./checkpoints/model.pth", "face.mp4", "audio.wav", 2, "out.mp4")  # doctest: +SKIP
+    """
+    command = [
+        "--checkpoint_path", checkpoint_path,
+        "--face", face_video,
+        "--audio", audio_file,
+        "--resize_factor", str(resize_factor),
+        "--outfile", outfile
+    ]
+
+    # Logging the command for debugging purposes
+    logging.info(f"Running inference with command: {command}")
+    
+    try:
+        # Attempt to generate the video
+        generateVideo(command)
+        logging.info("Video generation completed successfully.")
+    except Exception as e:
+        # Log the exception details to help with troubleshooting
+        logging.error(f"Failed to generate video. Error: {e}")
+        # Depending on the use case, you might want to re-raise the exception
+        # or handle it (e.g., by attempting a fallback operation or simply continuing)
+        # For now, we'll re-raise to make it clear that an error occurred.
+        raise
+
 
 #--------------------
 print("ShadDEBUG-2")
@@ -205,7 +247,6 @@ def chatbot(input_text):
     jsonResponseStr = json.dumps(jsonResponse, indent=4)
         
     return jsonResponseStr
-
 
 #--------------------
 print("ShadDEBUG-5")
