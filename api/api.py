@@ -16,9 +16,12 @@ Note:
 
 import logging
 # Initialize logging
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 #logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 #logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+# Setup logging configuration
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 from llama_index import StorageContext, load_index_from_storage, ServiceContext
 import gradio as gr
